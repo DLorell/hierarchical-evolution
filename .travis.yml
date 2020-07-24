@@ -1,4 +1,4 @@
 language: python
 python: 3.7
-install: pip install -r hillclimber/requirements.txt
-script: cd hillclimber; python -m pytest -vv
+install: pip install -r hill-climber/requirements.txt
+script: cd hill-climber; python -m pytest -vv
