@@ -11,4 +11,3 @@ libstdcxx-ng=9.1.0=hdf63c60_0
 mkl-service=2.3.0=py37he904b0f_0
 more-itertools=8.4.0=py_0
 numpy-base=1.18.5=py37hde5b4d6_0
-pytest-check=0.3.9=pypi_0
