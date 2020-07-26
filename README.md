@@ -19,4 +19,10 @@ Before jumping into anything too complicated, it would behoove us to establish t
 * K then represents the slack. Low K means high competition and high K means high slack.
     
 With any luck, the average fitness of the population and the maximum fitness within the population will vary with the level of slack
-      
+
+## Installation
+## Create Conda Env
+    conda create -q -n test-environment --file hill-climber/requirements.txt
+    conda activate test-environment
+## Install Additional Dependencies
+    pip install git+https://github.com/okken/pytest-check
