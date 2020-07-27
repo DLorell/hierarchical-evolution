@@ -14,11 +14,14 @@ Before jumping into anything too complicated, it would behoove us to establish t
 * An epoch is defined as 1000 generations, after which the simulation ends.
      
 ###  Agents:
-* The "agents" are really just points on the environment. At each iteration, a new agent is spawned on every tile adjacent to a living agent. If this results in more than K agents in the environment, then the (N - K) least fit agents despawn. (Where N is the # of agents.)  
-* In order to avoid large populations suffering from lack of space, agents may spawn on top of other living agents.  
-* K then represents the slack. Low K means high competition and high K means high slack.
+* The "agents" are really just points on the environment. 
+* An agent has a lifespan of one iteration. 
+* The "genetic" info of the agents are simply their positions. At each iteration, a new agent attempts to spawn on every tile adjacent to some living agents from the previous round. This movement amounts to reproduction with mutations. 
+* The order in which the agents are given a chance to reproduce or not is random each round. 
+* Each agent has a probability P(i) of reproducing. P is calculated by first applying a softmax over agent's heights to get the raw relative probability distribution S. P(i) is then calculated as P(i) = ((1-K)S(i) + K*(1/N) where N is the number of agents being considered and K linearly interpolates between the softmax distribution and the uniform distribution.
+* K then represents the slack. Low K means high competition and high K means high slack (i.e. reproduction is totally random).
     
-With any luck, the average fitness of the population and the maximum fitness within the population will vary with the level of slack
+With any luck, the average fitness of the population and the maximum fitness within the population will vary with the level of slack.
 
 ## Installation
 ## Create Conda Env
