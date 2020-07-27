@@ -51,6 +51,10 @@ class BoardView():
             for pos in self.new_agent_positions:
                 pygame.draw.circle(board, (*self.agent_color,), (int(round((pos[0]+0.5)*cell_size)), int(round((pos[1]+0.5)*cell_size))), (cell_size//2)-5)
 
+            self.agent_positions = self.new_agent_positions
+            self.new_agent_positions = []
+            self.agents_need_update = False
+
         self.screen.blit(board, (0, 0))
         pygame.display.update()
            
