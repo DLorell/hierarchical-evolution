@@ -2,6 +2,8 @@ import src.view as view
 import pytest
 import pytest_check as check
 import numpy as np
+import os
+os.environ['SDL_VIDEODRIVER']='dummy'
 
 board_data = np.array(
         [   
