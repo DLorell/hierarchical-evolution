@@ -3,8 +3,7 @@ import numpy as np
 from pygame.locals import *
 from time import sleep
 
-def main():
-    visualtest_boardview()
+
 
 class BoardView():
     def __init__(self, board_data, agent_positions):
@@ -58,14 +57,14 @@ class BoardView():
         self.screen.blit(board, (0, 0))
         pygame.display.update()
            
-        
-
     def __repr__(self):
         # TODO
         super().__repr__()
     def __str__(self):
         # TODO
         super().__str__()
+
+
 
 def visualtest_boardview():
     board_data = np.array(
@@ -110,7 +109,5 @@ def visualtest_boardview():
         
         i += 1
 
-
-
 if __name__ == "__main__": 
-    main()
+    visualtest_boardview()
