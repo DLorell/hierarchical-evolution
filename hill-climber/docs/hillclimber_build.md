@@ -50,10 +50,21 @@ Contains the classes which render a given enviroment. (Potentially add graphical
 
 #### BoardView()
 Attributes:
+    target_resolution   // int resolution targeted, difference from board divisibility
+    hill_color          // int[] RGB values representing the color of the map
+    agent_color         // int[] RGB values representing the color of agents
+    board_data          // np.array containing the color-map (height is RGB magnitude)
+    agent_positions     // int[] list of (x,y) agent locations
+    new_agent_positions // int[] list of (x,y) agent locations
+    agents_need_update  // bool indicating whether agent positions have changed since the board's last update
+    screen              // pygame.display where everything is rendered
 
 Public Methods:
 
-Private Methods:
+    get_resolution()                    // Returns the actual resolution based on target_resolution and board_data dimensions
+    update_screen()                     // Resizes the screen if resolution has changed and updates the board
+    set_agents(new_positions: int[])    // Toggles the agents_need-update flag and assigns new_positions to new_agent_positions
+    update_board()                      // Redraws cells on the board as necessary based on update agent positions.
 
 
 
