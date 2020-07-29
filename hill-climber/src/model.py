@@ -15,7 +15,7 @@ class Environment():
                                    else self.generate_new_heightmap(h, w)
         
         self.agents = agents
-        #self.rel_fitness = self._get_relative_dist()
+        self.rel_fitness = self._get_relative_dist()
         self.k = 0
 
     def __repr__(self):
@@ -26,7 +26,10 @@ class Environment():
             ret += ("\t" +  agent.__repr__() + "\n")
         return ret
     
-    def generate_new_heightmap(self, height, width):
+    def generate_new_heightmap(self, height, width, base=None):
+
+        base = base if base is not None else np.random.randint(low=0, high=100)
+
         peakyness = 0.2
         scale = 100
         octaves = 4
@@ -43,7 +46,7 @@ class Environment():
                                           lacunarity=lacunarity, 
                                           repeatx=1024, 
                                           repeaty=1024, 
-                                          base=0)
+                                          base=base)
         
         hmap -= np.min(hmap)
         hmap = np.clip(hmap - peakyness*np.max(hmap), a_min=0, a_max=np.inf)
@@ -58,6 +61,15 @@ class Environment():
 
         return hmap
 
+    def _get_relative_dist(self):
+        if len(self.agents) == 0:
+            return []
+        agent_fitness = [self.heightmap[a.x, a.y] for a in self.agents]
+        return self._softmax1D(agent_fitness)
+    
+    def _softmax1D(self, x):
+        e_x = np.exp(x - np.max(x))
+        return e_x / e_x.sum()
 
 
 
