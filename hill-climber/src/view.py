@@ -13,7 +13,7 @@ class BoardView():
         self.hill_color = [255, 255, 255]
         self.agent_color = [0, 0, 0]
 
-        board_data = np.clip((board_data / np.max(board_data)), a_min=0.1, a_max=1)
+        board_data = np.clip(((board_data-np.min(board_data)) / np.max(board_data)), a_min=0.1, a_max=1)
         self.board_data = np.expand_dims(board_data, axis=-1) * np.expand_dims(np.expand_dims(np.array(self.hill_color), axis=0), axis=0)
         self.agent_positions = []
         self.new_agent_positions = agent_positions
@@ -41,7 +41,7 @@ class BoardView():
 
         for x in range(self.board_data.shape[0]):
             for y in range(self.board_data.shape[1]):
-                pygame.draw.rect(board, (*self.board_data[x, y],), (x*cell_size, y*cell_size, cell_size-1, cell_size-1))
+                pygame.draw.rect(board, (*self.board_data[x, y],), (x*cell_size, y*cell_size, cell_size, cell_size))
 
         if self.agents_need_update:
             for pos in self.agent_positions:

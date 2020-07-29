@@ -27,12 +27,34 @@ class Environment():
         return ret
     
     def generate_new_heightmap(self, height, width):
-        num_peaks = 10
-        peaks = [(np.random.choice(list(range(height))), 
-                  np.random.choice(list(range(height)))) for _ in range(num_peaks)]
+        peakyness = 0.2
+        scale = 100
+        octaves = 4
+        persistence = 0.5 
+        lacunarity = 2.0
+
         hmap = np.zeros((height, width))
-        for peak in peaks:
-            hmap[peak[0], peak[1]] = 1
+        for x in range(height):
+            for y in range(width):
+                hmap[x,y] = noise.pnoise2(x/scale, 
+                                          y/scale, 
+                                          octaves=octaves, 
+                                          persistence=persistence, 
+                                          lacunarity=lacunarity, 
+                                          repeatx=1024, 
+                                          repeaty=1024, 
+                                          base=0)
+        
+        hmap -= np.min(hmap)
+        hmap = np.clip(hmap - peakyness*np.max(hmap), a_min=0, a_max=np.inf)
+
+
+        for x in range(height):
+            mult_x = (height + 100 - x) / height
+            hmap[x] = hmap[x] * mult_x
+        for y in range(width):
+            mult_y = (width + 100 - y) / width
+            hmap[:, y] = hmap[:, y] * mult_y
 
         return hmap
 
