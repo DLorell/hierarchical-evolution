@@ -76,6 +76,10 @@ class Environment():
 
 
 def visualtest_generate_new_heightmap():
+
+    print(Environment())
+    exit(0)
+
     import sys
     sys.path.append('src')
     from view import BoardView
