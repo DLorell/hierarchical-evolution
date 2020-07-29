@@ -24,6 +24,8 @@ class Environment():
         ret += "\n<model.Agent[]>\n"
         for agent in self.agents:
             ret += ("\t" +  agent.__repr__() + "\n")
+        if len(self.agents) == 0:
+            ret += "\t []"
         return ret
     
     def generate_new_heightmap(self, height, width, base=None):
@@ -67,6 +69,11 @@ class Environment():
         agent_fitness = [self.heightmap[a.x, a.y] for a in self.agents]
         return self._softmax1D(agent_fitness)
     
+    def _get_reproduction_dist(self):
+        uniform = np.ones_like(self.rel_fitness) / len(self.rel_fitness)
+        interpolated = (1-self.k) * self.rel_fitness + self.k * uniform
+        return interpolated
+
     def _softmax1D(self, x):
         e_x = np.exp(x - np.max(x))
         return e_x / e_x.sum()
@@ -77,7 +84,16 @@ class Environment():
 
 def visualtest_generate_new_heightmap():
 
-    print(Environment())
+    agents = [
+        Agent(0, 1),
+        Agent(2, 3),
+        Agent(5, 6)
+    ]
+
+    env = Environment(agents=agents)
+    env.k = 0.75
+    env._get_reproduction_dist()
+
     exit(0)
 
     import sys
