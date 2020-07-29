@@ -74,6 +74,15 @@ class Environment():
         interpolated = (1-self.k) * self.rel_fitness + self.k * uniform
         return interpolated
 
+    def _mutate(self, agent):
+        x = agent.x
+        y = agent.y
+        candidates = [
+            (x+1, y),
+            ()
+
+        ]
+
     def _softmax1D(self, x):
         e_x = np.exp(x - np.max(x))
         return e_x / e_x.sum()
