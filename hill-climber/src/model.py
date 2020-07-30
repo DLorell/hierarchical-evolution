@@ -77,11 +77,18 @@ class Environment():
     def _mutate(self, agent):
         x = agent.x
         y = agent.y
-        candidates = [
-            (x+1, y),
-            ()
+        children = [Agent(*pos) for pos in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]\
+                    if self._is_legal(pos)]
+        return children
 
-        ]
+
+    def _is_legal(self, pos):
+        assert len(pos) == 2
+        x = pos[0]
+        y = pos[1]
+        if x < 0 or x >= self.heightmap.shape[0] or y < 0 or y >= self.heightmap.shape[1]:
+            return False
+        return True
 
     def _softmax1D(self, x):
         e_x = np.exp(x - np.max(x))

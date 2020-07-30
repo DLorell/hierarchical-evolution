@@ -92,5 +92,37 @@ def test_get_reproduction_dist():
     for i in range(len(halfway_equal)):
         check.almost_equal(halfway_equal[i], 0.5*totally_equal[i] + 0.5*most_unequal[i])
 
+def test_mutate():
+    agents = [
+        model.Agent(0, 0),
+        model.Agent(9, 9),
+        model.Agent(0, 4),
+        model.Agent(4,4)
+    ]
 
+    environment = model.Environment(h=10, w=10, agents=agents)
+
+    top_corner_children = environment._mutate(agents[0])
+    extreme_corner_children = environment._mutate(agents[1])
+    edge_children = environment._mutate(agents[2])
+    middle_children = environment._mutate(agents[3])
+
+    check.equal(len(top_corner_children), 2)
+    check.equal(len(extreme_corner_children), 2)
+    check.equal(len(edge_children), 3)
+    check.equal(len(middle_children), 4)
+
+    top_corners = [(0, 1), (1, 0)]
+    check.equal(set([(a.x, a.y) for a in top_corner_children]), set(top_corners))
+
+    extreme_corners = [(9,8), (8, 9)]
+    check.equal(set([(a.x, a.y) for a in extreme_corner_children]), set(extreme_corners))
+
+    edge_uns = [(0, 3), (0, 5), (1, 4)]
+    check.equal(set([(a.x, a.y) for a in edge_children]), set(edge_uns))
+
+    middles = [(4, 3), (3, 4), (4, 5), (5, 4)]
+    check.equal(set([(a.x, a.y) for a in middle_children]), set(middles))
+
+    
 
