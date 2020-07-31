@@ -85,3 +85,8 @@ Public Methods:
 
 ## Roadmap
 
+* Reproducability: Figure out how to set seed and get reproducable simulations for testing. (Set seed?)
+* Optional Rendering: Make rendering toggleable so that multiple sims may be run at once, and faster.
+* Environmental Info: Calculate and save running stats of sim to environment class. (steps, avg fitness, etc.)
+* Graphical Info: Display some/all running stats to view.
+* UI: Allow user to play/pause simulation and adjust settings (agent positions, k, speed)
