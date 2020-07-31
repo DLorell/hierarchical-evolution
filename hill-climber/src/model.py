@@ -10,13 +10,14 @@ class Agent():
         return "<model.Agent> at ({},{})".format(self.x, self.y)
 
 class Environment():
-    def __init__(self, h=500, w=500, heightmap=None, agents=[]):
+    def __init__(self, h=500, w=500, heightmap=None, agents=None):
         self.heightmap = heightmap if heightmap is not None \
                                    else self.generate_new_heightmap(h, w)
-        
-        self.agents = agents
+
+        self.agents = [Agent(h//2, w//2)] if agents is None else agents
         self.rel_fitness = self._get_relative_dist()
         self.k = 0
+        self.max_pop = 50
 
     def __repr__(self):
         ret = "<model.Environment>\n" 
@@ -33,7 +34,8 @@ class Environment():
         base = base if base is not None else np.random.randint(low=0, high=100)
 
         peakyness = 0.2
-        scale = 100
+        x_scale = 100 * (height/500)
+        y_scale = 100 * (width/500)
         octaves = 4
         persistence = 0.5 
         lacunarity = 2.0
@@ -41,8 +43,8 @@ class Environment():
         hmap = np.zeros((height, width))
         for x in range(height):
             for y in range(width):
-                hmap[x,y] = noise.pnoise2(x/scale, 
-                                          y/scale, 
+                hmap[x,y] = noise.pnoise2(x/x_scale, 
+                                          y/y_scale, 
                                           octaves=octaves, 
                                           persistence=persistence, 
                                           lacunarity=lacunarity, 
@@ -60,8 +62,25 @@ class Environment():
         for y in range(width):
             mult_y = (width + 100 - y) / width
             hmap[:, y] = hmap[:, y] * mult_y
+        hmap = hmap / np.max(hmap)
 
         return hmap
+
+    def step(self):
+        reproduction_dist = self._get_reproduction_dist()
+        new_agents = []
+        while len(new_agents) < self.max_pop:
+            lucky_idx = np.random.randint(0, len(self.agents))
+            reproductive_success = np.random.choice([0, 1], p=[1-reproduction_dist[lucky_idx], reproduction_dist[lucky_idx]])
+            if not reproductive_success:
+                continue
+            children = self._mutate(self.agents[lucky_idx])
+            remaining_spots = self.max_pop - len(new_agents)
+            if remaining_spots >= len(children):
+                children = children[:remaining_spots]
+            new_agents += children
+        self.agents = new_agents
+        self.rel_fitness = self._get_relative_dist()
 
     def _get_relative_dist(self):
         if len(self.agents) == 0:
@@ -81,7 +100,6 @@ class Environment():
                     if self._is_legal(pos)]
         return children
 
-
     def _is_legal(self, pos):
         assert len(pos) == 2
         x = pos[0]
@@ -100,31 +118,37 @@ class Environment():
 
 def visualtest_generate_new_heightmap():
 
-    agents = [
-        Agent(0, 1),
-        Agent(2, 3),
-        Agent(5, 6)
-    ]
-
-    env = Environment(agents=agents)
-    env.k = 0.75
-    env._get_reproduction_dist()
-
-    exit(0)
-
     import sys
     sys.path.append('src')
     from view import BoardView
     import pygame 
     from pygame.locals import QUIT
+    import time
 
-    environment = Environment(h=500, w=500)
-    bview = BoardView(environment.heightmap, [])
+    pygame.init()
 
+    environment = Environment(h=250, w=250)
+    bview = BoardView(environment.heightmap, [(a.x, a.y) for a in environment.agents])
+    environment.k = 0
+    environment.max_pop = 100
+
+    tick_rate = 0.01
+    t = time.time()
     while 1:
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
+                #environment.step()
+                #bview.set_agents([(a.x, a.y) for a in environment.agents])
+                #bview.update_board()
+            
+        #"""
+        if time.time() - t >= tick_rate:
+            t = time.time()
+            environment.step()
+            bview.set_agents([(a.x, a.y) for a in environment.agents])
+            bview.update_board()
+        #"""
 
 
 if __name__ == "__main__": 

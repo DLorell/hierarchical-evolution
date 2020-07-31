@@ -13,8 +13,10 @@ def test_agent():
     check.equal(agent.y, 4)
 
 def test_generate_new_heightmap():
-    environment = model.Environment(h=500, w=500)
+    environment = model.Environment(h=10, w=10)
     check.is_not_none(environment.heightmap)
+    check.greater_equal(np.min(environment.heightmap), 0)
+    check.less_equal(np.max(environment.heightmap), 1)
 
 def test_get_relative_dist():
     environment = model.Environment(h=500, w=500)

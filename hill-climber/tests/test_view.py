@@ -26,9 +26,8 @@ def test_boardview():
     agent_positions = np.array([[4, 4]])
     bview = view.BoardView(board_data, agent_positions)
 
-    check.equal(bview.target_resolution, 1000)
-    check.equal(bview.hill_color, [255, 255, 255])
-    check.equal(bview.agent_color, [0, 0, 0])
+    check.equal(bview.hill_color, [128, 255, 180])
+    check.equal(bview.agent_color, [0, 255, 0])
     check.equal(bview.board_data.shape, (12, 12, 3))
     check.equal(bview.agent_positions.all(), agent_positions.all())
     check.equal(bview.new_agent_positions, [])

@@ -35,14 +35,17 @@ Attributes:
     agents          // Agent[] 
     rel_fitness     // numpy.array (num_agents) softmax based fitness distribution
     k               // float interpolating between softmax (competitive) and uniform (slack) reproduction distributions
+    max_pop         // int indicating the upper limit of how many agents can be active in each step
 
 Public Methods:
     generate_new_heightmap(int: height, int: width)    // Generates a new heightmap and assigns it to heightmap attribute
-    step()                                             // Updates the agent list to reflect one iteration of reproduction / death
+    step()                                             // Updates the agent list and rel_fitnesses to reflect one iteration of reproduction / death
 Private Methods:
     _get_relative_dist()  -> numpy.array               // Calculate the softmax distribution over agent fitnesses
     _get_reproduction_dist(float: k) -> numpy.array    // Calculate the final reproduction distribution, interpolated by k between softmax and uniform
     _mutate(Agent: agent) -> Agent[]                   // Gets a list of Agents mutated from a given parent Agent
+    _is_legal(Tuple[int]) -> bool                      // Returns True iff the given position is a legal index pair of the heightmap
+    _softmax1D(Array[float]) -> Array[float]           // Softmax function implemented in numpy
 
     
 ### view.py
