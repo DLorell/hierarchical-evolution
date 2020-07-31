@@ -1,1 +1,0 @@
-These documents can be used for writing out new features / requirements

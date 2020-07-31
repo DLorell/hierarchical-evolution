@@ -1,4 +1,5 @@
-from src.example import hello_world
+from src.controller import EvoSim
 
 def run():
-    hello_world()
+    evosim = EvoSim()
+    evosim.start()

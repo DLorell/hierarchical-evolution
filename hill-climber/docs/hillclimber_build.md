@@ -75,6 +75,13 @@ Public Methods:
 ### controller.py
 Contains the classes which allow the model and view to work in tandem.
 
+#### EvoSim()
+Attributes:
+
+Public Methods:
+
+    start()                 // Begins the main simulation loop.
+
 
 ## Roadmap
 
