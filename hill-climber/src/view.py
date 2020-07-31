@@ -2,24 +2,39 @@ import pygame
 import numpy as np
 from pygame.locals import *
 from time import sleep
-
-
+import os
 
 class BoardView():
     def __init__(self, board_data, agent_positions):
+        self.initialized = False
 
         pygame.display.set_caption("TestBoard")
-        self.target_resolution = 1000
-        self.hill_color = [255, 255, 255]
-        self.agent_color = [0, 0, 0]
+        
+        try:
+            info_object = pygame.display.Info() 
+        except:
+            info_object = None
+            print("[INFO] In BoardView.__init__: Failed to get info_object. Is there a display?")
 
-        board_data = np.clip((board_data / np.max(board_data)), a_min=0.1, a_max=1)
+        self.target_resolution = info_object.current_h if info_object is not None else 1000
+        self.hill_color = [128, 255, 180]
+        self.agent_color = [0, 255, 0]
+
+        board_data = np.clip(((board_data-np.min(board_data)) / np.max(board_data)), a_min=0.1, a_max=1)
         self.board_data = np.expand_dims(board_data, axis=-1) * np.expand_dims(np.expand_dims(np.array(self.hill_color), axis=0), axis=0)
+
+        resolution = self.get_resolution()
+        self.board = pygame.Surface((resolution, resolution))
+        self.board.fill((0, 0, 0))
+
+        
         self.agent_positions = []
         self.new_agent_positions = agent_positions
-        self.agents_need_update = True
+        self.agents_need_update = len(agent_positions) > 0
         self.screen = None
         self.update_screen()
+
+        
 
     def get_resolution(self):
         return self.target_resolution - (self.target_resolution % self.board_data.shape[0])
@@ -27,6 +42,9 @@ class BoardView():
     def update_screen(self):
         resolution = self.get_resolution()
         self.screen = pygame.display.set_mode((resolution,resolution))
+        self.board = pygame.Surface((resolution, resolution))
+        self.board.fill((0, 0, 0))
+        self.initialized = False
         self.update_board()
     
     def set_agents(self, new_positions):
@@ -36,26 +54,40 @@ class BoardView():
     def update_board(self):
         resolution = self.get_resolution()
         cell_size = resolution // self.board_data.shape[0]
-        board = pygame.Surface((resolution, resolution))
-        board.fill((0, 0, 0))
 
-        for x in range(self.board_data.shape[0]):
-            for y in range(self.board_data.shape[1]):
-                pygame.draw.rect(board, (*self.board_data[x, y],), (x*cell_size, y*cell_size, cell_size-1, cell_size-1))
+        if not self.initialized:
+            for x in range(self.board_data.shape[0]):
+                for y in range(self.board_data.shape[1]):
+                    pygame.draw.rect(self.board, (*self.board_data[x, y],), (x*cell_size, y*cell_size, cell_size, cell_size))
+            self.initialized = True
+            self.screen.blit(self.board, (0, 0))
+            pygame.display.update()
 
         if self.agents_need_update:
-            for pos in self.agent_positions:
-                pygame.draw.rect(board, (*self.board_data[x, y],), (x*cell_size, y*cell_size, cell_size-1, cell_size-1))
+            update_rects = []
 
-            for pos in self.new_agent_positions:
-                pygame.draw.circle(board, (*self.agent_color,), (int(round((pos[0]+0.5)*cell_size)), int(round((pos[1]+0.5)*cell_size))), (cell_size//2)-5)
+            new_poses = set(self.new_agent_positions)
+            old_poses = set(self.agent_positions)
+
+            new_pos_draws = set(new_poses).difference(set(old_poses))
+            cover_ups = set(old_poses).difference(set(new_poses))
+
+            for pos in cover_ups:
+                x, y = pos
+                cover_rect = pygame.Rect(x*cell_size, y*cell_size, cell_size, cell_size)
+                pygame.draw.rect(self.screen, (*self.board_data[x, y],), cover_rect)
+                update_rects.append(cover_rect)
+
+            for pos in new_pos_draws:
+                pygame.draw.circle(self.screen, (*self.agent_color,), (int(round((pos[0]+0.5)*cell_size)), int(round((pos[1]+0.5)*cell_size))), (cell_size//2))
+                update_rect = pygame.Rect(pos[0]*cell_size, pos[1]*cell_size, cell_size, cell_size)
+                update_rects.append(update_rect)
+
+            pygame.display.update(update_rects)
 
             self.agent_positions = self.new_agent_positions
             self.new_agent_positions = []
             self.agents_need_update = False
-
-        self.screen.blit(board, (0, 0))
-        pygame.display.update()
            
     def __repr__(self):
         # TODO

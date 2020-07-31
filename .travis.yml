@@ -23,6 +23,7 @@ install:
   - conda activate test-environment
   - pip install git+https://github.com/okken/pytest-check
   - pip install pygame
+  - pip install noise
 
 script:
   - cd hill-climber
