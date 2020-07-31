@@ -53,7 +53,8 @@ Contains the classes which render a given enviroment. (Potentially add graphical
 
 #### BoardView()
 Attributes:
-    target_resolution   // int resolution targeted, difference from board divisibility
+    initialized         // bool which determines whether or not the entire background gets redrawn in the next update.
+    target_resolution   // int resolution targeted, difference comes from board divisibility. Attempts to make square of display height.
     hill_color          // int[] RGB values representing the color of the map
     agent_color         // int[] RGB values representing the color of agents
     board_data          // np.array containing the color-map (height is RGB magnitude)
