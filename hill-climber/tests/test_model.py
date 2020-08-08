@@ -104,15 +104,18 @@ def test_mutate():
 
     environment = model.Environment(h=10, w=10, agents=agents)
 
-    top_corner_children = environment._mutate(agents[0])
-    extreme_corner_children = environment._mutate(agents[1])
-    edge_children = environment._mutate(agents[2])
-    middle_children = environment._mutate(agents[3])
+    top_corner_children = environment._mutate(agents[0], 2)
+    extreme_corner_children = environment._mutate(agents[1], 2)
+    edge_children = environment._mutate(agents[2], 3)
+    middle_children = environment._mutate(agents[3], 4)
+
+    extreme_corner_children_looped = environment._mutate(agents[1], 4)
 
     check.equal(len(top_corner_children), 2)
     check.equal(len(extreme_corner_children), 2)
     check.equal(len(edge_children), 3)
     check.equal(len(middle_children), 4)
+    check.equal(len(extreme_corner_children_looped), 4)
 
     top_corners = [(0, 1), (1, 0)]
     check.equal(set([(a.x, a.y) for a in top_corner_children]), set(top_corners))
@@ -125,6 +128,12 @@ def test_mutate():
 
     middles = [(4, 3), (3, 4), (4, 5), (5, 4)]
     check.equal(set([(a.x, a.y) for a in middle_children]), set(middles))
+
+    extreme_corners_looped = [(9,8), (8, 9), (8,8)]
+    check.equal(set([(a.x, a.y) for a in extreme_corner_children_looped]), set(extreme_corners_looped))
+
+
+
 
     
 

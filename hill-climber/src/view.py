@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 from pygame.locals import *
 from time import sleep
+import time
 import os
 
 class BoardView():
@@ -16,7 +17,7 @@ class BoardView():
             info_object = None
             print("[INFO] In BoardView.__init__: Failed to get info_object. Is there a display?")
 
-        self.target_resolution = info_object.current_h if info_object is not None else 1000
+        self.target_resolution = info_object.current_h if info_object is not None else 500
         self.hill_color = [128, 255, 180]
         self.agent_color = [0, 255, 0]
 

@@ -7,11 +7,11 @@ from src.model import Agent, Environment
 
 class EvoSim():
     def __init__(self):
-        self.map_size = 250
+        self.map_size = 200
         self.max_pop = 100
-        self.k = 0
+        self.k = 0.25
 
-        self.tick_rate = 0.01
+        self.tick_rate = 0.005
 
     def start(self):
         pygame.init()
@@ -23,7 +23,7 @@ class EvoSim():
         bview = BoardView(environment.heightmap, [(a.x, a.y) for a in environment.agents])
 
         t = time.time()
-        while 1:
+        while True:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     return
@@ -33,6 +33,7 @@ class EvoSim():
                 environment.step()
                 bview.set_agents([(a.x, a.y) for a in environment.agents])
                 bview.update_board()
+                
 
 
 

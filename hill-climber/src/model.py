@@ -1,5 +1,6 @@
 import numpy as np
 import noise
+import time
 
 class Agent():
     def __init__(self, x, y):
@@ -13,11 +14,14 @@ class Environment():
     def __init__(self, h=500, w=500, heightmap=None, agents=None):
         self.heightmap = heightmap if heightmap is not None \
                                    else self.generate_new_heightmap(h, w)
+        
+        self._temperature = 3
 
         self.agents = [Agent(h//2, w//2)] if agents is None else agents
         self.rel_fitness = self._get_relative_dist()
         self.k = 0
         self.max_pop = 50
+        
 
     def __repr__(self):
         ret = "<model.Environment>\n" 
@@ -67,7 +71,13 @@ class Environment():
         return hmap
 
     def step(self):
+        t = time.time()
+
         reproduction_dist = self._get_reproduction_dist()
+
+        """ 
+        # Old method. Stochasticity makes it take too long when there are many agents.
+
         new_agents = []
         while len(new_agents) < self.max_pop:
             lucky_idx = np.random.randint(0, len(self.agents))
@@ -79,13 +89,23 @@ class Environment():
             if remaining_spots >= len(children):
                 children = children[:remaining_spots]
             new_agents += children
-        self.agents = new_agents
+        """
+
+        # New method: Simply multiply the reproduction dist by max_pop and round. That's how many children
+        # each agent gets.
+        children_per_agent = np.rint(reproduction_dist * self.max_pop).astype('int')
+        children = []
+        for agent, num_children in zip(self.agents, children_per_agent):
+            children += self._mutate(agent, num_children)
+
+
+        self.agents = children
         self.rel_fitness = self._get_relative_dist()
 
     def _get_relative_dist(self):
         if len(self.agents) == 0:
             return []
-        agent_fitness = [self.heightmap[a.x, a.y] for a in self.agents]
+        agent_fitness = [self.heightmap[a.x, a.y] * self._temperature for a in self.agents]
         return self._softmax1D(agent_fitness)
     
     def _get_reproduction_dist(self):
@@ -93,11 +113,28 @@ class Environment():
         interpolated = (1-self.k) * self.rel_fitness + self.k * uniform
         return interpolated
 
-    def _mutate(self, agent):
+    def _mutate(self, agent, num_children):
         x = agent.x
         y = agent.y
-        children = [Agent(*pos) for pos in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]\
-                    if self._is_legal(pos)]
+
+        positions = [
+            (x+1, y),
+            (x-1, y),
+            (x, y+1), 
+            (x, y-1),
+            (x+1, y+1),
+            (x+1, y-1),
+            (x-1, y-1),
+            (x-1, y+1)
+        ]
+        positions = [pos for pos in positions if self._is_legal(pos)]
+        np.random.shuffle(positions)
+
+        children = []
+        for i in range(num_children):
+            pos = positions[i%len(positions)]
+            children.append(Agent(*pos))
+
         return children
 
     def _is_legal(self, pos):
